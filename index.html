@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ระบบบริหารจัดการเงินห้องเรียน</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --one-bg: #f2f2f7; --one-card: #ffffff; --one-primary: #007aff;
+      --one-text-main: #1c1c1e; --one-text-muted: #8e8e93;
+      --one-border-radius-card: 24px; --one-border-radius-btn: 20px; --one-border-radius-input: 14px;
+    }
+
+    body { background-color: var(--one-bg); font-family: 'Noto Sans Thai', sans-serif; color: var(--one-text-main); padding-bottom: 40px; }
+    .viewing-area { padding: 40px 20px 20px; }
+    .viewing-area h1 { font-weight: 700; letter-spacing: -0.5px; margin-bottom: 5px; }
+    
+    .one-card { background-color: var(--one-card); border-radius: var(--one-border-radius-card); padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: none; margin-bottom: 20px; }
+    .balance-display { font-size: 3rem; font-weight: 700; color: var(--one-primary); letter-spacing: -1px; }
+    .balance-sub-label { font-size: 0.9rem; color: var(--one-text-muted); font-weight: 500; }
+
+    .form-control, .form-select { background-color: #f2f2f7; border: 1px solid transparent; border-radius: var(--one-border-radius-input); padding: 12px 16px; font-weight: 500; transition: all 0.2s ease; }
+    .form-control:focus, .form-select:focus { background-color: #ffffff; border-color: var(--one-primary); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1); }
+    .form-label { font-weight: 600; font-size: 0.95rem; margin-left: 4px; }
+
+    .btn-one { background-color: var(--one-primary); color: white; border-radius: var(--one-border-radius-btn); padding: 14px; font-weight: 600; font-size: 1.05rem; border: none; transition: opacity 0.2s; }
+    .btn-one:hover { opacity: 0.85; color: white; }
+    .btn-one-secondary { background-color: #e5f1ff; color: var(--one-primary); }
+    .btn-one-danger { background-color: #da1e28; color: white; }
+
+    .badge-soft-success { background-color: #e8f8f0; color: #24a148; font-weight: 600; border-radius: 12px; padding: 6px 10px; }
+    .badge-soft-warning { background-color: #fff4e5; color: #f18c00; font-weight: 600; border-radius: 12px; padding: 6px 10px; }
+    .badge-soft-danger { background-color: #faeaea; color: #da1e28; font-weight: 600; border-radius: 12px; padding: 6px 10px; }
+
+    .statement-item { padding: 16px 0; border-bottom: 1px solid #f2f2f7; }
+    .statement-item:last-child { border-bottom: none; }
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+    .bg-income { background-color: #24a148; } .bg-expense { background-color: #da1e28; } .bg-info { background-color: #007aff; }
+
+    .pill-nav { background-color: #e9e9eb; border-radius: var(--one-border-radius-btn); padding: 4px; display: flex; overflow: hidden; }
+    .pill-tab { flex: 1; border-radius: var(--one-border-radius-btn); padding: 8px 0; border: none; background: transparent; font-weight: 500; color: var(--one-text-muted); transition: all 0.2s ease; font-size: 0.9rem;}
+    .pill-tab.active { background-color: #ffffff; color: var(--one-text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.06); font-weight: 600; }
+    .pill-tab.admin-tab { color: #da1e28; }
+  </style>
+</head>
+<body>
+
+<div class="container" style="max-width: 800px;">
+  
+  <div class="viewing-area">
+    <h1>บัญชีห้องเรียน</h1>
+    <p class="balance-sub-label">ยอดคงเหลือสุทธิ (อัปเดตล่าสุด)</p>
+    <div id="netBalanceDisplay" class="balance-display">--.--</div>
+    
+    <div class="row mt-3 g-3">
+      <div class="col-4">
+        <div class="balance-sub-label">ยอดยกมา</div>
+        <div class="fw-bold" id="bfDisplay">0.00</div>
+      </div>
+      <div class="col-4">
+        <div class="balance-sub-label">รายรับ</div>
+        <div class="fw-bold text-success" id="incDisplay">0.00</div>
+      </div>
+      <div class="col-4">
+        <div class="balance-sub-label">รายจ่าย</div>
+        <div class="fw-bold text-danger" id="expDisplay">0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="one-card mt-2">
+    <!-- แท็บ 3 ส่วน -->
+    <div class="pill-nav mb-4">
+      <button class="pill-tab active" id="tabIncome" onclick="selectTab('Income')">แจ้งรายรับ</button>
+      <button class="pill-tab admin-tab" id="tabAdmin" onclick="selectTab('Admin')">Admin</button>
+      <button class="pill-tab" id="tabReport" onclick="selectTab('Report')">ขอรายงาน</button>
+    </div>
+
+    <!-- ส่วนที่ 1: แจ้งรายรับ (นักศึกษา) -->
+    <div id="formIncome">
+      <h5 class="fw-bold mb-3">แจ้งโอนเงินเข้า (รายรับ)</h5>
+      <div class="mb-3">
+        <label class="form-label">รหัสนักศึกษา</label>
+        <div class="d-flex gap-2">
+          <input type="text" id="incStudentId" class="form-control" maxlength="10" placeholder="10 หลัก">
+          <button class="btn btn-one btn-one-secondary px-4" onclick="fetchStudent('incStudentId', 'incFullName', this)">ค้นหา</button>
+        </div>
+      </div>
+      <div class="mb-3">
+        <input type="text" id="incFullName" class="form-control" readonly placeholder="ชื่อ-นามสกุล">
+      </div>
+      <div class="row g-2 mb-3">
+        <div class="col-6"><label class="form-label">จำนวนเงิน</label><input type="number" id="incAmount" class="form-control" min="0" placeholder="0.00"></div>
+        <div class="col-6"><label class="form-label">รายละเอียด</label><input type="text" id="incDesc" class="form-control" placeholder="เช่น ค่าชีท"></div>
+      </div>
+      <div class="mb-4"><label class="form-label">แนบสลิป</label><input type="file" id="incFile" class="form-control" accept="image/*,.pdf"></div>
+      <button class="btn btn-one w-100" id="btnSubmitInc" onclick="submitIncome()">ส่งรายการโอน</button>
+    </div>
+
+    <!-- ส่วนที่ 2: Admin (จัดการและรายจ่าย) -->
+    <div id="formAdmin" style="display: none;">
+      <h5 class="fw-bold text-danger mb-3"><span class="status-dot bg-expense"></span>ส่วนของผู้ดูแลระบบ</h5>
+      <div class="mb-3"><label class="form-label">ประเภท</label>
+        <select id="admType" class="form-select"><option value="รายจ่าย">บันทึกรายจ่าย (ห้องเรียน)</option><option value="รายรับ">บันทึกรายรับ (อื่นๆ)</option></select>
+      </div>
+      <div class="row g-2 mb-3">
+        <div class="col-6"><label class="form-label">จำนวนเงิน</label><input type="number" id="admAmount" class="form-control" min="0" placeholder="0.00"></div>
+        <div class="col-6"><label class="form-label">รายละเอียด</label><input type="text" id="admDesc" class="form-control" placeholder="เช่น ซื้ออุปกรณ์"></div>
+      </div>
+      <div class="mb-3"><label class="form-label">แนบใบเสร็จ (ถ้ามี)</label><input type="file" id="admFile" class="form-control" accept="image/*,.pdf"></div>
+      <div class="mb-4"><label class="form-label text-danger">รหัส PIN ยืนยัน</label><input type="password" id="admPin" class="form-control" placeholder="••••••"></div>
+      <button class="btn btn-one btn-one-danger w-100 mb-4" id="btnSubmitAdm" onclick="submitAdmin()">อนุมัติรายการทันที</button>
+
+      <!-- ส่วนตรวจสอบคำขอรายงานของแอดมิน -->
+      <hr>
+      <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+        <h6 class="fw-bold mb-0 text-primary">คำขอรับไฟล์รายงาน (รอส่งอีเมล)</h6>
+        <button class="btn btn-sm btn-one-secondary" onclick="loadPendingReports()">รีเฟรช</button>
+      </div>
+      <div id="pendingReportsBox" class="p-3 bg-light rounded" style="max-height: 250px; overflow-y: auto;">
+        <div class="text-center text-muted small">กำลังโหลดคำขอ...</div>
+      </div>
+    </div>
+
+    <!-- ส่วนที่ 3: ขอรายงาน (ส่งเข้าอีเมล) -->
+    <div id="formReport" style="display: none;">
+      <h5 class="fw-bold mb-3"><span class="status-dot bg-info"></span>ขอไฟล์รายงาน (Statement PDF)</h5>
+      <p class="text-muted small mb-4">ระบบจะส่งไฟล์รายงานไปยังอีเมลของคุณ หลังจากที่ Admin กดอนุมัติคำขอแล้ว</p>
+      <div class="mb-4">
+        <label class="form-label">กรอกอีเมลที่ต้องการรับไฟล์</label>
+        <input type="email" id="reqEmail" class="form-control" placeholder="example@email.com" required>
+      </div>
+      <button class="btn btn-one w-100" id="btnSubmitReq" onclick="submitReportReq()">ส่งคำขอไปยัง Admin</button>
+    </div>
+
+  </div>
+
+  <div class="one-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold m-0">ประวัติการทำรายการ</h5>
+      <button class="btn btn-sm btn-one btn-one-secondary px-3" style="padding: 8px;" onclick="loadSummary()">รีเฟรช</button>
+    </div>
+    <div id="statementList"><div class="text-center py-4 balance-sub-label">กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<!-- Alert Modal -->
+<div class="modal fade" id="customAlertModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 320px;">
+    <div class="modal-content one-card" style="padding: 0; border: none; text-align: center;">
+      <div class="modal-body p-4">
+        <div id="alertIcon" class="mb-3" style="font-size: 3rem;"></div>
+        <h5 class="fw-bold mb-2" id="alertTitle">แจ้งเตือน</h5>
+        <p class="text-muted mb-4" id="alertMessage">ข้อความ</p>
+        <button type="button" class="btn btn-one w-100" data-bs-dismiss="modal">ตกลง</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PIN Prompt Modal -->
+<div class="modal fade" id="pinPromptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 320px;">
+    <div class="modal-content one-card" style="padding: 0; border: none;">
+      <div class="modal-body p-4 text-center">
+        <h5 class="fw-bold mb-2">ยืนยันรหัส PIN</h5>
+        <p class="text-muted small mb-4">สำหรับ Admin อนุมัติรายการนี้</p>
+        <input type="password" id="modalPinInput" class="form-control text-center fs-4 mb-4" placeholder="••••••">
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-light flex-fill" style="border-radius: var(--one-border-radius-btn);" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-one flex-fill" id="btnConfirmPin">ยืนยัน</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ** กรอก URL WEB APP ที่ได้ตอน Deploy **
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxb6UIb7TxgPRfGRdUkpR8fcSPOvyk6j5ocxDEBDPfMO_yruekABfkRN-plgK84uzln/exec';
+  
+  let alertModal, pinPromptModal;
+  let pendingTxId = null, pendingAction = null, pendingReqId = null;
+
+  window.onload = function() {
+    alertModal = new bootstrap.Modal(document.getElementById('customAlertModal'));
+    pinPromptModal = new bootstrap.Modal(document.getElementById('pinPromptModal'));
+    loadSummary();
+  };
+
+  function showAlert(title, msg, isSuccess = false) {
+    document.getElementById('alertTitle').innerText = title;
+    document.getElementById('alertMessage').innerText = msg;
+    document.getElementById('alertIcon').innerHTML = isSuccess ? '✅' : '⚠️';
+    alertModal.show();
+  }
+
+  function selectTab(tab) {
+    document.getElementById('tabIncome').className = 'pill-tab' + (tab==='Income'?' active':'');
+    document.getElementById('tabAdmin').className = 'pill-tab admin-tab' + (tab==='Admin'?' active':'');
+    document.getElementById('tabReport').className = 'pill-tab' + (tab==='Report'?' active':'');
+    
+    document.getElementById('formIncome').style.display = tab==='Income'?'block':'none';
+    document.getElementById('formAdmin').style.display = tab==='Admin'?'block':'none';
+    document.getElementById('formReport').style.display = tab==='Report'?'block':'none';
+
+    if (tab === 'Admin') loadPendingReports();
+  }
+
+  async function fetchStudent(inputId, nameId, btn) {
+    const sId = document.getElementById(inputId).value.trim();
+    if (sId.length !== 10) return showAlert('ข้อมูลไม่ครบ', 'กรุณากรอกรหัส 10 หลัก', false);
+    btn.innerText = '...'; btn.disabled = true;
+    try {
+      const response = await fetch(`${API_URL}?action=searchStudent&studentId=${sId}`, { method: 'GET', redirect: 'follow' });
+      const res = await response.json();
+      if (res.success) { document.getElementById(nameId).value = res.fullName; } 
+      else { showAlert('ไม่พบข้อมูล', res.message, false); document.getElementById(nameId).value = ''; }
+    } catch (err) { showAlert('ข้อผิดพลาด', 'เชื่อมต่อเครือข่ายไม่ได้', false); } 
+    finally { btn.innerText = 'ค้นหา'; btn.disabled = false; }
+  }
+
+  // --- ส่วนส่งรายรับ (นักศึกษา) ---
+  function submitIncome() {
+    const amt = document.getElementById('incAmount').value;
+    const file = document.getElementById('incFile').files[0];
+    if (!amt || amt <= 0) return showAlert('ข้อมูลไม่ครบ', 'กรุณากรอกจำนวนเงินให้ถูกต้อง', false);
+    
+    const payload = {
+      type: 'รายรับ',
+      studentId: document.getElementById('incStudentId').value,
+      fullName: document.getElementById('incFullName').value,
+      amount: amt,
+      description: document.getElementById('incDesc').value,
+      fileName: file ? file.name : null, fileType: file ? file.type : null, fileData: null,
+      isAdminForm: false
+    };
+    processAndSend(file, payload, 'btnSubmitInc', 'ส่งรายการโอน', () => {
+      document.getElementById('incAmount').value = ''; document.getElementById('incDesc').value = ''; document.getElementById('incFile').value = ''; loadSummary();
+    });
+  }
+
+  // --- ส่วนส่งรายจ่าย/จัดการ (Admin) ---
+  function submitAdmin() {
+    const amt = document.getElementById('admAmount').value;
+    const pin = document.getElementById('admPin').value;
+    const file = document.getElementById('admFile').files[0];
+    if (!amt || amt <= 0) return showAlert('ข้อมูลไม่ครบ', 'กรุณากรอกจำนวนเงินให้ถูกต้อง', false);
+    if (!pin) return showAlert('ขาดรหัส', 'แอดมินต้องระบุรหัส PIN', false);
+    
+    const payload = {
+      type: 'Admin',
+      studentId: '-', fullName: 'ส่วนกลาง (Admin)', amount: amt,
+      description: document.getElementById('admDesc').value,
+      fileName: file ? file.name : null, fileType: file ? file.type : null, fileData: null,
+      isAdminForm: true, adminActionType: document.getElementById('admType').value, adminPin: pin
+    };
+    processAndSend(file, payload, 'btnSubmitAdm', 'อนุมัติรายการทันที', () => {
+      document.getElementById('admAmount').value = ''; document.getElementById('admDesc').value = ''; document.getElementById('admFile').value = ''; document.getElementById('admPin').value = ''; loadSummary();
+    });
+  }
+
+  function processAndSend(file, payload, btnId, origText, onSuccess) {
+    if (file) {
+      const r = new FileReader();
+      r.onload = e => { payload.fileData = e.target.result; sendTxAPI(payload, btnId, origText, onSuccess); };
+      r.readAsDataURL(file);
+    } else { sendTxAPI(payload, btnId, origText, onSuccess); }
+  }
+
+  async function sendTxAPI(payload, btnId, origText, onSuccess) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = true; btn.innerText = 'กำลังประมวลผล...';
+    try {
+      const response = await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'submitTransaction', payload: payload }) });
+      const res = await response.json();
+      showAlert(res.success ? 'สำเร็จ' : 'ข้อผิดพลาด', res.message, res.success);
+      if (res.success) onSuccess();
+    } catch (err) { showAlert('ข้อผิดพลาด', 'ส่งข้อมูลล้มเหลว', false); } 
+    finally { btn.disabled = false; btn.innerText = origText; }
+  }
+
+  // --- ส่วนขอรายงาน (Statement) ---
+  async function submitReportReq() {
+    const email = document.getElementById('reqEmail').value;
+    if(!email.includes('@')) return showAlert('ข้อมูลไม่ครบ', 'กรุณากรอกอีเมลให้ถูกต้อง', false);
+    const btn = document.getElementById('btnSubmitReq');
+    btn.disabled = true; btn.innerText = 'กำลังส่งคำขอ...';
+    try {
+      const response = await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'requestReport', email: email }) });
+      const res = await response.json();
+      showAlert(res.success ? 'สำเร็จ' : 'ข้อผิดพลาด', res.message, res.success);
+      if(res.success) document.getElementById('reqEmail').value = '';
+    } catch(err) { showAlert('ข้อผิดพลาด', 'เชื่อมต่อล้มเหลว', false); }
+    finally { btn.disabled = false; btn.innerText = 'ส่งคำขอไปยัง Admin'; }
+  }
+
+  async function loadPendingReports() {
+    const box = document.getElementById('pendingReportsBox');
+    box.innerHTML = '<div class="text-center text-muted small">กำลังตรวจสอบคำขอ...</div>';
+    try {
+      const response = await fetch(`${API_URL}?action=getPendingReports`, { method: 'GET', redirect: 'follow' });
+      const res = await response.json();
+      if(!res.requests || res.requests.length === 0) { box.innerHTML = '<div class="text-center text-muted small">ไม่มีคำขอรออนุมัติ</div>'; return; }
+      
+      let html = '';
+      res.requests.forEach(r => {
+        html += `<div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded border">
+          <div><div class="fw-bold small text-primary">${r.email}</div><div class="small text-muted">${r.date}</div></div>
+          <button class="btn btn-sm btn-one" onclick="promptPinForReport('${r.reqId}')">ส่งอีเมล</button>
+        </div>`;
+      });
+      box.innerHTML = html;
+    } catch(err) { box.innerHTML = '<div class="text-danger small">โหลดล้มเหลว</div>'; }
+  }
+
+  function promptPinForReport(reqId) {
+    pendingReqId = reqId; pendingAction = 'REPORT';
+    document.getElementById('modalPinInput').value = '';
+    pinPromptModal.show();
+  }
+
+  // --- โหลดประวัติและ PIN Modal สำหรับธุรกรรม ---
+  function promptPin(txId, action) {
+    pendingTxId = txId; pendingAction = action;
+    document.getElementById('modalPinInput').value = '';
+    pinPromptModal.show();
+  }
+
+  document.getElementById('btnConfirmPin').onclick = async function() {
+    const pin = document.getElementById('modalPinInput').value;
+    if (!pin) { pinPromptModal.hide(); return showAlert('แจ้งเตือน', 'กรุณาระบุรหัส PIN', false); }
+    const btn = this; btn.innerText = 'รอสักครู่...'; btn.disabled = true;
+
+    try {
+      let bodyData;
+      if (pendingAction === 'REPORT') {
+        bodyData = { action: 'approveReport', adminPin: pin, reqId: pendingReqId };
+      } else {
+        bodyData = { action: 'verifyAndApprove', adminPin: pin, txId: pendingTxId, approvalAction: pendingAction };
+      }
+
+      const response = await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(bodyData) });
+      const res = await response.json();
+      
+      pinPromptModal.hide();
+      showAlert(res.success ? 'สำเร็จ' : 'ล้มเหลว', res.message, res.success);
+      
+      if (res.success) {
+        if(pendingAction === 'REPORT') loadPendingReports();
+        else loadSummary();
+      }
+    } catch (err) { pinPromptModal.hide(); showAlert('ข้อผิดพลาด', 'ทำรายการไม่สำเร็จ', false); } 
+    finally { btn.innerText = 'ยืนยัน'; btn.disabled = false; }
+  };
+
+  async function loadSummary() {
+    try {
+      const response = await fetch(`${API_URL}?action=getSummary`, { method: 'GET', redirect: 'follow' });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.message);
+
+      document.getElementById('netBalanceDisplay').innerText = data.netBalance.toLocaleString('th-TH', {minimumFractionDigits: 2});
+      document.getElementById('bfDisplay').innerText = data.broughtForward.toLocaleString('th-TH', {minimumFractionDigits: 2});
+      document.getElementById('incDisplay').innerText = data.totalIncome.toLocaleString('th-TH', {minimumFractionDigits: 2});
+      document.getElementById('expDisplay').innerText = data.totalExpense.toLocaleString('th-TH', {minimumFractionDigits: 2});
+
+      const listDiv = document.getElementById('statementList');
+      if (data.statement.length === 0) { listDiv.innerHTML = '<div class="text-center py-4 balance-sub-label">ยังไม่มีรายการ</div>'; return; }
+
+      listDiv.innerHTML = '';
+      data.statement.forEach(row => {
+        let badgeClass = row.status === 'APPROVED' ? 'badge-soft-success' : (row.status === 'REJECTED' ? 'badge-soft-danger' : 'badge-soft-warning');
+        let typeColor = row.type === 'รายรับ' ? 'bg-income' : 'bg-expense';
+        let actionBtn = row.status === 'PENDING' 
+          ? `<div class="mt-2"><button class="btn btn-sm btn-outline-success rounded-pill px-3 me-2" onclick="promptPin('${row.txId}', 'APPROVE')">อนุมัติ</button><button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="promptPin('${row.txId}', 'REJECT')">ปฏิเสธ</button></div>` : '';
+        let link = row.slipUrl !== '-' ? `<a href="${row.slipUrl}" target="_blank" class="text-decoration-none small ms-2">ดูสลิป</a>` : '';
+
+        listDiv.innerHTML += `<div class="statement-item">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-bold"><span class="status-dot ${typeColor}"></span>${row.name}</div>
+              <div class="small balance-sub-label">${row.date} | ${row.desc} ${link}</div>
+              ${actionBtn}
+            </div>
+            <div class="text-end">
+              <div class="fw-bold mb-1">${row.amount.toLocaleString('th-TH', {minimumFractionDigits: 2})} ฿</div>
+              <span class="${badgeClass} small">${row.status}</span>
+            </div>
+          </div>
+        </div>`;
+      });
+    } catch (err) { document.getElementById('statementList').innerHTML = '<div class="text-danger text-center">โหลดข้อมูลไม่สำเร็จ</div>'; }
+  }
+</script>
+</body>
+</html>

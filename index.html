@@ -4,25 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ระบบบริหารจัดการเงินห้องเรียน</title>
-  
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <style>
     :root {
-      --one-bg: #f2f2f7; --one-card: #ffffff; --one-primary: #007aff;
-      --one-text-main: #1c1c1e; --one-text-muted: #8e8e93;
-      --one-border-radius-card: 24px; --one-border-radius-btn: 20px; --one-border-radius-input: 14px;
+      --one-bg: #f2f2f7;
+      --one-card: #ffffff;
+      --one-primary: #007aff;
+      --one-text-main: #1c1c1e;
+      --one-text-muted: #8e8e93;
+      --one-border-radius-card: 24px;
+      --one-border-radius-btn: 20px;
+      --one-border-radius-input: 14px;
     }
 
     body { background-color: var(--one-bg); font-family: 'Noto Sans Thai', sans-serif; color: var(--one-text-main); padding-bottom: 40px; }
     .viewing-area { padding: 40px 20px 20px; }
     .viewing-area h1 { font-weight: 700; letter-spacing: -0.5px; margin-bottom: 5px; }
-    
+
     .one-card { background-color: var(--one-card); border-radius: var(--one-border-radius-card); padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: none; margin-bottom: 20px; }
-    .balance-display { font-size: 3rem; font-weight: 700; color: var(--one-primary); letter-spacing: -1px; }
+    .balance-display { font-size: 3rem; font-weight: 700; color: var(--one-primary); letter-spacing: -1px; overflow-wrap: anywhere; }
     .balance-sub-label { font-size: 0.9rem; color: var(--one-text-muted); font-weight: 500; }
 
     .form-control, .form-select { background-color: #f2f2f7; border: 1px solid transparent; border-radius: var(--one-border-radius-input); padding: 12px 16px; font-weight: 500; transition: all 0.2s ease; }
@@ -31,7 +36,9 @@
 
     .btn-one { background-color: var(--one-primary); color: white; border-radius: var(--one-border-radius-btn); padding: 14px; font-weight: 600; font-size: 1.05rem; border: none; transition: opacity 0.2s; }
     .btn-one:hover { opacity: 0.85; color: white; }
+    .btn-one:disabled { opacity: 0.65; cursor: wait; }
     .btn-one-secondary { background-color: #e5f1ff; color: var(--one-primary); }
+    .btn-one-secondary:hover { background-color: #d7e9ff; color: var(--one-primary); }
     .btn-one-danger { background-color: #da1e28; color: white; }
 
     .badge-soft-success { background-color: #e8f8f0; color: #24a148; font-weight: 600; border-radius: 12px; padding: 6px 10px; }
@@ -41,137 +48,195 @@
     .statement-item { padding: 16px 0; border-bottom: 1px solid #f2f2f7; }
     .statement-item:last-child { border-bottom: none; }
     .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
-    .bg-income { background-color: #24a148; } .bg-expense { background-color: #da1e28; } .bg-info { background-color: #007aff; }
+    .bg-income { background-color: #24a148; }
+    .bg-expense { background-color: #da1e28; }
+    .bg-info { background-color: #007aff; }
 
-    .pill-nav { background-color: #e9e9eb; border-radius: var(--one-border-radius-btn); padding: 4px; display: flex; overflow: hidden; }
-    .pill-tab { flex: 1; border-radius: var(--one-border-radius-btn); padding: 8px 0; border: none; background: transparent; font-weight: 500; color: var(--one-text-muted); transition: all 0.2s ease; font-size: 0.9rem;}
+    .pill-nav { background-color: #e9e9eb; border-radius: var(--one-border-radius-btn); padding: 4px; display: flex; overflow: hidden; gap: 2px; }
+    .pill-tab { flex: 1; border-radius: var(--one-border-radius-btn); padding: 8px 5px; border: none; background: transparent; font-weight: 500; color: var(--one-text-muted); transition: all 0.2s ease; font-size: 0.9rem; }
     .pill-tab.active { background-color: #ffffff; color: var(--one-text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.06); font-weight: 600; }
     .pill-tab.admin-tab { color: #da1e28; }
+    .pill-tab.admin-tab.active { color: #da1e28; }
+
+    .system-status { display: flex; align-items: center; gap: 10px; border-radius: 14px; padding: 11px 14px; margin-top: 18px; font-size: 0.88rem; font-weight: 500; border: 1px solid transparent; min-height: 44px; }
+    .system-status.loading { color: #005bb5; background: #e5f1ff; border-color: #c7e0ff; }
+    .system-status.success { color: #167044; background: #e8f8f0; border-color: #c8eedc; }
+    .system-status.error { color: #a61d24; background: #faeaea; border-color: #f4caca; }
+    .system-status.info { color: #55555c; background: #ececf0; border-color: #dfdfe5; }
+    .status-spinner { width: 16px; height: 16px; flex: 0 0 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.75s linear infinite; display: none; }
+    .system-status.loading .status-spinner { display: inline-block; }
+    .status-symbol { display: none; line-height: 1; font-size: 1rem; }
+    .system-status.success .status-symbol.success-symbol,
+    .system-status.error .status-symbol.error-symbol,
+    .system-status.info .status-symbol.info-symbol { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .admin-gate { border: 1px solid #f1cccc; border-radius: 18px; padding: 22px; background: #fffafa; }
+    .admin-gate-icon { font-size: 2.2rem; }
+    .loading-line { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 20px 8px; color: var(--one-text-muted); font-size: 0.9rem; }
+    .small-spinner { width: 16px; height: 16px; border: 2px solid #b4b4bb; border-right-color: transparent; border-radius: 50%; animation: spin 0.75s linear infinite; }
+
+    @media (max-width: 575.98px) {
+      .viewing-area { padding: 28px 6px 18px; }
+      .one-card { padding: 18px; border-radius: 20px; }
+      .balance-display { font-size: 2.35rem; }
+      .pill-tab { font-size: 0.78rem; line-height: 1.3; }
+    }
   </style>
 </head>
 <body>
-
 <div class="container" style="max-width: 800px;">
-  
   <div class="viewing-area">
     <h1>บัญชีห้องเรียน DTL#33</h1>
-    <p class="balance-sub-label">ยอดคงเหลือสุทธิ (อัปเดตล่าสุด)</p>
-    <div id="netBalanceDisplay" class="balance-display">--.--</div>
-    
+    <p class="balance-sub-label">ยอดคงเหลือสุทธิ ณ เวลาที่เรียกดูข้อมูล</p>
+    <div id="netBalanceDisplay" class="balance-display">กำลังโหลด...</div>
+
     <div class="row mt-3 g-3">
       <div class="col-4">
         <div class="balance-sub-label">ยอดยกมา</div>
-        <div class="fw-bold" id="bfDisplay">0.00</div>
+        <div class="fw-bold" id="bfDisplay">--.--</div>
       </div>
       <div class="col-4">
-        <div class="balance-sub-label">รายรับ</div>
-        <div class="fw-bold text-success" id="incDisplay">0.00</div>
+        <div class="balance-sub-label">รายรับสะสม</div>
+        <div class="fw-bold text-success" id="incDisplay">--.--</div>
       </div>
       <div class="col-4">
-        <div class="balance-sub-label">รายจ่าย</div>
-        <div class="fw-bold text-danger" id="expDisplay">0.00</div>
+        <div class="balance-sub-label">รายจ่ายสะสม</div>
+        <div class="fw-bold text-danger" id="expDisplay">--.--</div>
       </div>
+    </div>
+
+    <div id="systemStatus" class="system-status loading" role="status" aria-live="polite">
+      <span class="status-spinner" aria-hidden="true"></span>
+      <span class="status-symbol success-symbol" aria-hidden="true">✓</span>
+      <span class="status-symbol error-symbol" aria-hidden="true">!</span>
+      <span class="status-symbol info-symbol" aria-hidden="true">i</span>
+      <span id="systemStatusText">กำลังเตรียมการเชื่อมต่อระบบ...</span>
     </div>
   </div>
 
   <div class="one-card mt-2">
-    <!-- แท็บ 3 ส่วน -->
-    <div class="pill-nav mb-4">
-      <button class="pill-tab active" id="tabIncome" onclick="selectTab('Income')">แจ้งรายรับ (สำหรับนักศึกษา)</button>
-      <button class="pill-tab admin-tab" id="tabAdmin" onclick="selectTab('Admin')">Admin</button>
-      <button class="pill-tab" id="tabReport" onclick="selectTab('Report')">ขอดูรายงาน</button>
+    <div class="pill-nav mb-4" role="tablist" aria-label="เมนูระบบบัญชีห้องเรียน">
+      <button class="pill-tab active" id="tabIncome" type="button" onclick="selectTab('Income')">แจ้งรายการรายรับ</button>
+      <button class="pill-tab admin-tab" id="tabAdmin" type="button" onclick="selectTab('Admin')">ผู้ดูแลระบบ</button>
+      <button class="pill-tab" id="tabReport" type="button" onclick="selectTab('Report')">ขอรับรายงาน</button>
     </div>
 
-    <!-- ส่วนที่ 1: แจ้งรายรับ (นักศึกษา) -->
+    <!-- ส่วนที่ 1: แจ้งรายรับ -->
     <div id="formIncome">
-      <h5 class="fw-bold mb-3">แจ้งโอนเงินเข้า (รายรับ)</h5>
+      <h5 class="fw-bold mb-3">แจ้งรายการเงินรับเข้า</h5>
       <div class="mb-3">
-        <label class="form-label">รหัสนักศึกษา</label>
+        <label class="form-label" for="incStudentId">รหัสนักศึกษา</label>
         <div class="d-flex gap-2">
-          <input type="text" id="incStudentId" class="form-control" maxlength="10" placeholder="10 หลัก">
-          <button class="btn btn-one btn-one-secondary px-4" onclick="fetchStudent('incStudentId', 'incFullName', this)">ค้นหา</button>
+          <input type="text" id="incStudentId" class="form-control" maxlength="10" inputmode="numeric" placeholder="กรอกรหัสนักศึกษา 10 หลัก">
+          <button class="btn btn-one btn-one-secondary px-4" id="btnSearchStudent" type="button" onclick="fetchStudent('incStudentId', 'incFullName', this)">ค้นหา</button>
         </div>
       </div>
       <div class="mb-3">
-        <input type="text" id="incFullName" class="form-control" readonly placeholder="ชื่อ-นามสกุล">
+        <label class="form-label" for="incFullName">ชื่อและนามสกุล</label>
+        <input type="text" id="incFullName" class="form-control" readonly placeholder="ระบบจะแสดงชื่อหลังตรวจสอบรหัสนักศึกษา">
       </div>
       <div class="row g-2 mb-3">
-        <div class="col-6"><label class="form-label">จำนวนเงิน</label><input type="number" id="incAmount" class="form-control" min="0" placeholder="0.00"></div>
-        <div class="col-6"><label class="form-label">รายละเอียด</label><input type="text" id="incDesc" class="form-control" placeholder="เช่น ค่าชีท"></div>
+        <div class="col-6"><label class="form-label" for="incAmount">จำนวนเงิน (บาท)</label><input type="number" id="incAmount" class="form-control" min="0.01" step="0.01" placeholder="0.00"></div>
+        <div class="col-6"><label class="form-label" for="incDesc">รายละเอียดรายการ</label><input type="text" id="incDesc" class="form-control" placeholder="เช่น ค่าวัสดุการเรียน"></div>
       </div>
-      <div class="mb-4"><label class="form-label">แนบสลิป</label><input type="file" id="incFile" class="form-control" accept="image/*,.pdf"></div>
-      <button class="btn btn-one w-100" id="btnSubmitInc" onclick="submitIncome()">ส่งรายการโอน</button>
+      <div class="mb-4"><label class="form-label" for="incFile">เอกสารประกอบหรือหลักฐานการโอน (ถ้ามี)</label><input type="file" id="incFile" class="form-control" accept="image/*,.pdf"></div>
+      <button class="btn btn-one w-100" id="btnSubmitInc" type="button" onclick="submitIncome()">ส่งรายการเงินรับเข้า</button>
     </div>
 
-    <!-- ส่วนที่ 2: Admin (จัดการและรายจ่าย) -->
+    <!-- ส่วนที่ 2: Admin ต้องยืนยัน PIN ก่อน -->
     <div id="formAdmin" style="display: none;">
-      <h5 class="fw-bold text-danger mb-3"><span class="status-dot bg-expense"></span>ส่วนของผู้ดูแลระบบ</h5>
-      <div class="mb-3"><label class="form-label">ประเภท</label>
-        <select id="admType" class="form-select"><option value="รายจ่าย">บันทึกรายจ่าย (ห้องเรียน)</option><option value="รายรับ">บันทึกรายรับ (อื่นๆ)</option></select>
+      <div id="adminGate" class="admin-gate">
+        <div class="text-center">
+          <div class="admin-gate-icon mb-2" aria-hidden="true">🔐</div>
+          <h5 class="fw-bold text-danger mb-2">ยืนยันตัวตนผู้ดูแลระบบ</h5>
+          <p class="text-muted small mb-4">กรุณาระบุรหัส PIN ของผู้ดูแลระบบเพื่อเข้าใช้งานส่วนจัดการบัญชี</p>
+        </div>
+        <form id="adminGateForm" onsubmit="event.preventDefault(); verifyAdminGate();">
+          <div class="mb-3">
+            <label class="form-label" for="adminGatePin">รหัส PIN</label>
+            <input type="password" id="adminGatePin" class="form-control text-center" autocomplete="current-password" placeholder="ระบุรหัส PIN" required>
+          </div>
+          <button class="btn btn-one btn-one-danger w-100" id="btnVerifyAdmin" type="submit">ยืนยันและเข้าสู่ระบบ</button>
+        </form>
       </div>
-      <div class="row g-2 mb-3">
-        <div class="col-6"><label class="form-label">จำนวนเงิน</label><input type="number" id="admAmount" class="form-control" min="0" placeholder="0.00"></div>
-        <div class="col-6"><label class="form-label">รายละเอียด</label><input type="text" id="admDesc" class="form-control" placeholder="เช่น ซื้ออุปกรณ์"></div>
-      </div>
-      <div class="mb-3"><label class="form-label">แนบใบเสร็จ (ถ้ามี)</label><input type="file" id="admFile" class="form-control" accept="image/*,.pdf"></div>
-      <div class="mb-4"><label class="form-label text-danger">รหัส PIN ยืนยัน</label><input type="password" id="admPin" class="form-control" placeholder="••••••"></div>
-      <button class="btn btn-one btn-one-danger w-100 mb-4" id="btnSubmitAdm" onclick="submitAdmin()">อนุมัติรายการทันที</button>
 
-      <!-- ส่วนตรวจสอบคำขอรายงานของแอดมิน -->
-      <hr>
-      <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
-        <h6 class="fw-bold mb-0 text-primary">คำขอรับไฟล์รายงาน (รอส่งอีเมล)</h6>
-        <button class="btn btn-sm btn-one-secondary" onclick="loadPendingReports()">รีเฟรช</button>
-      </div>
-      <div id="pendingReportsBox" class="p-3 bg-light rounded" style="max-height: 250px; overflow-y: auto;">
-        <div class="text-center text-muted small">กำลังโหลดคำขอ...</div>
+      <div id="adminUnlockedPanel" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-danger mb-0"><span class="status-dot bg-expense"></span>ส่วนจัดการของผู้ดูแลระบบ</h5>
+          <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" onclick="lockAdminPanel()">ออกจากส่วน Admin</button>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="admType">ประเภทรายการ</label>
+          <select id="admType" class="form-select">
+            <option value="รายจ่าย">บันทึกรายจ่ายของห้องเรียน</option>
+            <option value="รายรับ">บันทึกรายรับอื่น ๆ</option>
+          </select>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-6"><label class="form-label" for="admAmount">จำนวนเงิน (บาท)</label><input type="number" id="admAmount" class="form-control" min="0.01" step="0.01" placeholder="0.00"></div>
+          <div class="col-6"><label class="form-label" for="admDesc">รายละเอียดรายการ</label><input type="text" id="admDesc" class="form-control" placeholder="เช่น ซื้ออุปกรณ์การเรียน"></div>
+        </div>
+        <div class="mb-3"><label class="form-label" for="admFile">ใบเสร็จหรือเอกสารประกอบ (ถ้ามี)</label><input type="file" id="admFile" class="form-control" accept="image/*,.pdf"></div>
+        <button class="btn btn-one btn-one-danger w-100 mb-4" id="btnSubmitAdm" type="button" onclick="submitAdmin()">บันทึกและอนุมัติรายการ</button>
+
+        <hr>
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-2 gap-2">
+          <h6 class="fw-bold mb-0 text-primary">คำขอรับรายงานที่รออนุมัติ</h6>
+          <button class="btn btn-sm btn-one-secondary" type="button" onclick="loadPendingReports()">โหลดข้อมูลล่าสุด</button>
+        </div>
+        <div id="pendingReportsBox" class="p-3 bg-light rounded" style="max-height: 250px; overflow-y: auto;">
+          <div class="loading-line"><span class="small-spinner"></span><span>กำลังตรวจสอบคำขอ...</span></div>
+        </div>
       </div>
     </div>
 
-    <!-- ส่วนที่ 3: ขอรายงาน (ส่งเข้าอีเมล) -->
+    <!-- ส่วนที่ 3: ขอรายงาน -->
     <div id="formReport" style="display: none;">
-      <h5 class="fw-bold mb-3"><span class="status-dot bg-info"></span>ขอไฟล์รายงาน (Statement PDF)</h5>
-      <p class="text-muted small mb-4">ระบบจะส่งไฟล์รายงานไปยังอีเมลของคุณ หลังจากที่ Admin กดอนุมัติคำขอแล้ว</p>
-      <div class="mb-4">
-        <label class="form-label">กรอกอีเมลที่ต้องการรับไฟล์</label>
-        <input type="email" id="reqEmail" class="form-control" placeholder="example@email.com" required>
-      </div>
-      <button class="btn btn-one w-100" id="btnSubmitReq" onclick="submitReportReq()">ส่งคำขอไปยัง Admin</button>
+      <h5 class="fw-bold mb-3"><span class="status-dot bg-info"></span>ขอรับรายงานบัญชีในรูปแบบ PDF</h5>
+      <p class="text-muted small mb-4">ระบบจะตรวจสอบอีเมลกับรายชื่อที่บันทึกไว้ในฐานข้อมูลก่อนรับคำขอ เมื่อผู้ดูแลระบบอนุมัติแล้ว ระบบจะส่งไฟล์รายงาน PDF ไปยังอีเมลดังกล่าว</p>
+      <form id="reportRequestForm" onsubmit="event.preventDefault(); submitReportReq();">
+        <div class="mb-4">
+          <label class="form-label" for="reqEmail">อีเมลของมหาวิทยาลัยที่ได้รับการกำหนด</label>
+          <input type="email" id="reqEmail" class="form-control" placeholder="กรอกอีเมลของมหาวิทยาลัย" autocomplete="email" required>
+          <div class="form-text">โปรดใช้อีเมลที่มีรายชื่ออยู่ในฐานข้อมูลของระบบเท่านั้น</div>
+        </div>
+        <button class="btn btn-one w-100" id="btnSubmitReq" type="submit">ส่งคำขอรับรายงาน</button>
+      </form>
     </div>
-
   </div>
 
   <div class="one-card">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
       <h5 class="fw-bold m-0">ประวัติการทำรายการ</h5>
-      <button class="btn btn-sm btn-one btn-one-secondary px-3" style="padding: 8px;" onclick="loadSummary()">รีเฟรช</button>
+      <button class="btn btn-sm btn-one btn-one-secondary px-3" style="padding: 8px;" type="button" onclick="loadSummary()">โหลดข้อมูลล่าสุด</button>
     </div>
-    <div id="statementList"><div class="text-center py-4 balance-sub-label">กำลังโหลด...</div></div>
+    <div id="statementList"><div class="loading-line"><span class="small-spinner"></span><span>กำลังโหลดประวัติการทำรายการ...</span></div></div>
   </div>
 </div>
 
 <!-- Alert Modal -->
 <div class="modal fade" id="customAlertModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 320px;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 340px;">
     <div class="modal-content one-card" style="padding: 0; border: none; text-align: center;">
       <div class="modal-body p-4">
         <div id="alertIcon" class="mb-3" style="font-size: 3rem;"></div>
         <h5 class="fw-bold mb-2" id="alertTitle">แจ้งเตือน</h5>
-        <p class="text-muted mb-4" id="alertMessage">ข้อความ</p>
-        <button type="button" class="btn btn-one w-100" data-bs-dismiss="modal">ตกลง</button>
+        <p class="text-muted mb-4" id="alertMessage">ข้อความแจ้งเตือน</p>
+        <button type="button" class="btn btn-one w-100" data-bs-dismiss="modal">รับทราบ</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PIN Prompt Modal -->
+<!-- PIN Prompt Modal สำหรับอนุมัติรายการและคำขอรายงาน -->
 <div class="modal fade" id="pinPromptModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 320px;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 340px;">
     <div class="modal-content one-card" style="padding: 0; border: none;">
       <div class="modal-body p-4 text-center">
         <h5 class="fw-bold mb-2">ยืนยันรหัส PIN</h5>
-        <p class="text-muted small mb-4">สำหรับ Admin อนุมัติรายการนี้</p>
-        <input type="password" id="modalPinInput" class="form-control text-center fs-4 mb-4" placeholder="••••••">
+        <p class="text-muted small mb-4">โปรดระบุรหัส PIN เพื่อยืนยันการดำเนินการของผู้ดูแลระบบ</p>
+        <input type="password" id="modalPinInput" class="form-control text-center fs-4 mb-4" autocomplete="current-password" placeholder="ระบุรหัส PIN">
         <div class="d-flex gap-2">
           <button type="button" class="btn btn-light flex-fill" style="border-radius: var(--one-border-radius-btn);" data-bs-dismiss="modal">ยกเลิก</button>
           <button type="button" class="btn btn-one flex-fill" id="btnConfirmPin">ยืนยัน</button>
@@ -183,162 +248,405 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // ** กรอก URL WEB APP ที่ได้ตอน Deploy **
+  // URL ของ Google Apps Script Web App ที่ Deploy แล้ว
   const API_URL = 'https://script.google.com/macros/s/AKfycbxb6UIb7TxgPRfGRdUkpR8fcSPOvyk6j5ocxDEBDPfMO_yruekABfkRN-plgK84uzln/exec';
-  
-  let alertModal, pinPromptModal;
-  let pendingTxId = null, pendingAction = null, pendingReqId = null;
 
-  window.onload = function() {
+  let alertModal;
+  let pinPromptModal;
+  let pendingTxId = null;
+  let pendingAction = null;
+  let pendingReqId = null;
+  let adminAuthenticated = false;
+  let adminPinSession = '';
+
+  window.addEventListener('load', function () {
     alertModal = new bootstrap.Modal(document.getElementById('customAlertModal'));
     pinPromptModal = new bootstrap.Modal(document.getElementById('pinPromptModal'));
+    selectTab('Income');
     loadSummary();
-  };
+  });
 
-  function showAlert(title, msg, isSuccess = false) {
-    document.getElementById('alertTitle').innerText = title;
-    document.getElementById('alertMessage').innerText = msg;
-    document.getElementById('alertIcon').innerHTML = isSuccess ? '✅' : '⚠️';
+  function setSystemStatus(message, state) {
+    const statusBox = document.getElementById('systemStatus');
+    const statusText = document.getElementById('systemStatusText');
+    if (!statusBox || !statusText) return;
+    const allowedStates = ['loading', 'success', 'error', 'info'];
+    const safeState = allowedStates.includes(state) ? state : 'info';
+    statusBox.className = 'system-status ' + safeState;
+    statusText.textContent = message || 'ระบบพร้อมใช้งาน';
+  }
+
+  async function apiRequest(url, options, statusMessages) {
+    const messages = Object.assign({
+      loading: 'กำลังเชื่อมต่อกับระบบ...',
+      success: 'เชื่อมต่อระบบเรียบร้อยแล้ว',
+      failure: 'ไม่สามารถเชื่อมต่อระบบได้ในขณะนี้'
+    }, statusMessages || {});
+    setSystemStatus(messages.loading, 'loading');
+    try {
+      const response = await fetch(url, options || { method: 'GET', redirect: 'follow' });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const result = await response.json();
+      if (result && result.success === false) {
+        setSystemStatus(result.message || messages.failure, 'error');
+      } else {
+        setSystemStatus(messages.success, 'success');
+      }
+      return result;
+    } catch (error) {
+      setSystemStatus(messages.failure, 'error');
+      throw error;
+    }
+  }
+
+  function postOptions(bodyData) {
+    return {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(bodyData)
+    };
+  }
+
+  function formatMoney(value) {
+    const number = Number(value);
+    return (Number.isFinite(number) ? number : 0).toLocaleString('th-TH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function escapeHtml(value) {
+    return String(value === null || value === undefined ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function showAlert(title, message, isSuccess) {
+    document.getElementById('alertTitle').textContent = title || 'แจ้งเตือน';
+    document.getElementById('alertMessage').textContent = message || '';
+    document.getElementById('alertIcon').textContent = isSuccess ? '✅' : '⚠️';
     alertModal.show();
   }
 
   function selectTab(tab) {
-    document.getElementById('tabIncome').className = 'pill-tab' + (tab==='Income'?' active':'');
-    document.getElementById('tabAdmin').className = 'pill-tab admin-tab' + (tab==='Admin'?' active':'');
-    document.getElementById('tabReport').className = 'pill-tab' + (tab==='Report'?' active':'');
-    
-    document.getElementById('formIncome').style.display = tab==='Income'?'block':'none';
-    document.getElementById('formAdmin').style.display = tab==='Admin'?'block':'none';
-    document.getElementById('formReport').style.display = tab==='Report'?'block':'none';
+    document.getElementById('tabIncome').className = 'pill-tab' + (tab === 'Income' ? ' active' : '');
+    document.getElementById('tabAdmin').className = 'pill-tab admin-tab' + (tab === 'Admin' ? ' active' : '');
+    document.getElementById('tabReport').className = 'pill-tab' + (tab === 'Report' ? ' active' : '');
 
-    if (tab === 'Admin') loadPendingReports();
+    document.getElementById('formIncome').style.display = tab === 'Income' ? 'block' : 'none';
+    document.getElementById('formAdmin').style.display = tab === 'Admin' ? 'block' : 'none';
+    document.getElementById('formReport').style.display = tab === 'Report' ? 'block' : 'none';
+
+    if (tab === 'Admin') {
+      if (adminAuthenticated) {
+        document.getElementById('adminGate').style.display = 'none';
+        document.getElementById('adminUnlockedPanel').style.display = 'block';
+        loadPendingReports();
+      } else {
+        document.getElementById('adminGate').style.display = 'block';
+        document.getElementById('adminUnlockedPanel').style.display = 'none';
+        setSystemStatus('กรุณายืนยัน PIN ก่อนเข้าใช้งานส่วนผู้ดูแลระบบ', 'info');
+        setTimeout(function () {
+          const pinInput = document.getElementById('adminGatePin');
+          if (pinInput) pinInput.focus();
+        }, 100);
+      }
+    }
   }
 
-  async function fetchStudent(inputId, nameId, btn) {
-    const sId = document.getElementById(inputId).value.trim();
-    if (sId.length !== 10) return showAlert('ข้อมูลไม่ครบ', 'กรุณากรอกรหัส 10 หลัก', false);
-    btn.innerText = '...'; btn.disabled = true;
+  async function verifyAdminGate() {
+    const pinInput = document.getElementById('adminGatePin');
+    const pin = pinInput.value.trim();
+    const button = document.getElementById('btnVerifyAdmin');
+    if (!pin) {
+      showAlert('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุรหัส PIN ของผู้ดูแลระบบ', false);
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'กำลังตรวจสอบรหัส...';
     try {
-      const response = await fetch(`${API_URL}?action=searchStudent&studentId=${sId}`, { method: 'GET', redirect: 'follow' });
-      const res = await response.json();
-      if (res.success) { document.getElementById(nameId).value = res.fullName; } 
-      else { showAlert('ไม่พบข้อมูล', res.message, false); document.getElementById(nameId).value = ''; }
-    } catch (err) { showAlert('ข้อผิดพลาด', 'เชื่อมต่อเครือข่ายไม่ได้', false); } 
-    finally { btn.innerText = 'ค้นหา'; btn.disabled = false; }
+      const result = await apiRequest(API_URL, postOptions({ action: 'verifyAdminAccess', adminPin: pin }), {
+        loading: 'กำลังตรวจสอบสิทธิ์ผู้ดูแลระบบ...',
+        success: 'ตรวจสอบสิทธิ์ผู้ดูแลระบบเรียบร้อยแล้ว',
+        failure: 'ไม่สามารถตรวจสอบสิทธิ์ได้ กรุณาตรวจสอบการเชื่อมต่อ'
+      });
+      if (!result.success) {
+        adminPinSession = '';
+        adminAuthenticated = false;
+        pinInput.value = '';
+        showAlert('ไม่สามารถเข้าสู่ระบบได้', result.message || 'รหัส PIN ไม่ถูกต้อง', false);
+        return;
+      }
+
+      adminPinSession = pin;
+      adminAuthenticated = true;
+      pinInput.value = '';
+      document.getElementById('adminGate').style.display = 'none';
+      document.getElementById('adminUnlockedPanel').style.display = 'block';
+      showAlert('ยืนยันตัวตนสำเร็จ', 'อนุญาตให้เข้าใช้งานส่วนผู้ดูแลระบบแล้ว', true);
+      loadPendingReports();
+    } catch (error) {
+      showAlert('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเพื่อตรวจสอบ PIN ได้ กรุณาลองอีกครั้ง', false);
+    } finally {
+      button.disabled = false;
+      button.textContent = 'ยืนยันและเข้าสู่ระบบ';
+    }
   }
 
-  // --- ส่วนส่งรายรับ (นักศึกษา) ---
+  function lockAdminPanel() {
+    adminAuthenticated = false;
+    adminPinSession = '';
+    document.getElementById('adminUnlockedPanel').style.display = 'none';
+    document.getElementById('adminGate').style.display = 'block';
+    document.getElementById('adminGatePin').value = '';
+    document.getElementById('admAmount').value = '';
+    document.getElementById('admDesc').value = '';
+    document.getElementById('admFile').value = '';
+    setSystemStatus('ออกจากส่วนผู้ดูแลระบบแล้ว กรุณายืนยัน PIN อีกครั้งเมื่อต้องการเข้าใช้งาน', 'info');
+  }
+
+  async function fetchStudent(inputId, nameId, button) {
+    const studentId = document.getElementById(inputId).value.trim();
+    if (studentId.length !== 10) {
+      showAlert('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุรหัสนักศึกษาให้ครบ 10 หลัก', false);
+      return;
+    }
+
+    const originalText = button.textContent;
+    button.textContent = 'กำลังค้นหา...';
+    button.disabled = true;
+    setSystemStatus('กำลังค้นหาข้อมูลนักศึกษา...', 'loading');
+    try {
+      const result = await apiRequest(
+        API_URL + '?action=searchStudent&studentId=' + encodeURIComponent(studentId),
+        { method: 'GET', redirect: 'follow' },
+        { loading: 'กำลังค้นหาข้อมูลนักศึกษา...', success: 'ค้นหาข้อมูลนักศึกษาเรียบร้อยแล้ว', failure: 'ไม่สามารถเชื่อมต่อเพื่อค้นหาข้อมูลนักศึกษาได้' }
+      );
+      if (result.success) {
+        document.getElementById(nameId).value = result.fullName || '';
+        setSystemStatus('ตรวจสอบรหัสนักศึกษาและโหลดข้อมูลเรียบร้อยแล้ว', 'success');
+      } else {
+        document.getElementById(nameId).value = '';
+        showAlert('ไม่พบข้อมูล', result.message || 'ไม่พบรหัสนักศึกษาในฐานข้อมูล', false);
+      }
+    } catch (error) {
+      document.getElementById(nameId).value = '';
+      showAlert('การเชื่อมต่อขัดข้อง', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาตรวจสอบเครือข่ายและลองอีกครั้ง', false);
+    } finally {
+      button.textContent = originalText;
+      button.disabled = false;
+    }
+  }
+
+  // --- ส่งรายการรายรับ ---
   function submitIncome() {
-    const amt = document.getElementById('incAmount').value;
+    const amount = document.getElementById('incAmount').value;
     const file = document.getElementById('incFile').files[0];
-    if (!amt || amt <= 0) return showAlert('ข้อมูลไม่ครบ', 'กรุณากรอกจำนวนเงินให้ถูกต้อง', false);
-    
+    if (!amount || Number(amount) <= 0) {
+      showAlert('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุจำนวนเงินให้มากกว่า 0 บาท', false);
+      return;
+    }
+
     const payload = {
       type: 'รายรับ',
-      studentId: document.getElementById('incStudentId').value,
-      fullName: document.getElementById('incFullName').value,
-      amount: amt,
-      description: document.getElementById('incDesc').value,
-      fileName: file ? file.name : null, fileType: file ? file.type : null, fileData: null,
+      studentId: document.getElementById('incStudentId').value.trim(),
+      fullName: document.getElementById('incFullName').value.trim(),
+      amount: amount,
+      description: document.getElementById('incDesc').value.trim(),
+      fileName: file ? file.name : null,
+      fileType: file ? file.type : null,
+      fileData: null,
       isAdminForm: false
     };
-    processAndSend(file, payload, 'btnSubmitInc', 'ส่งรายการโอน', () => {
-      document.getElementById('incAmount').value = ''; document.getElementById('incDesc').value = ''; document.getElementById('incFile').value = ''; loadSummary();
+
+    processAndSend(file, payload, 'btnSubmitInc', 'ส่งรายการเงินรับเข้า', function () {
+      document.getElementById('incAmount').value = '';
+      document.getElementById('incDesc').value = '';
+      document.getElementById('incFile').value = '';
+      loadSummary();
     });
   }
 
-  // --- ส่วนส่งรายจ่าย/จัดการ (Admin) ---
+  // --- บันทึกรายการโดยผู้ดูแลระบบ ---
   function submitAdmin() {
-    const amt = document.getElementById('admAmount').value;
-    const pin = document.getElementById('admPin').value;
+    if (!adminAuthenticated || !adminPinSession) {
+      showAlert('ไม่อนุญาตให้ดำเนินการ', 'กรุณายืนยัน PIN ของผู้ดูแลระบบก่อนดำเนินการ', false);
+      lockAdminPanel();
+      return;
+    }
+
+    const amount = document.getElementById('admAmount').value;
     const file = document.getElementById('admFile').files[0];
-    if (!amt || amt <= 0) return showAlert('ข้อมูลไม่ครบ', 'กรุณากรอกจำนวนเงินให้ถูกต้อง', false);
-    if (!pin) return showAlert('ขาดรหัส', 'แอดมินต้องระบุรหัส PIN', false);
-    
+    if (!amount || Number(amount) <= 0) {
+      showAlert('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุจำนวนเงินให้มากกว่า 0 บาท', false);
+      return;
+    }
+
     const payload = {
       type: 'Admin',
-      studentId: '-', fullName: 'ส่วนกลาง (Admin)', amount: amt,
-      description: document.getElementById('admDesc').value,
-      fileName: file ? file.name : null, fileType: file ? file.type : null, fileData: null,
-      isAdminForm: true, adminActionType: document.getElementById('admType').value, adminPin: pin
+      studentId: '-',
+      fullName: 'ส่วนกลาง (ผู้ดูแลระบบ)',
+      amount: amount,
+      description: document.getElementById('admDesc').value.trim(),
+      fileName: file ? file.name : null,
+      fileType: file ? file.type : null,
+      fileData: null,
+      isAdminForm: true,
+      adminActionType: document.getElementById('admType').value,
+      adminPin: adminPinSession
     };
-    processAndSend(file, payload, 'btnSubmitAdm', 'อนุมัติรายการทันที', () => {
-      document.getElementById('admAmount').value = ''; document.getElementById('admDesc').value = ''; document.getElementById('admFile').value = ''; document.getElementById('admPin').value = ''; loadSummary();
+
+    processAndSend(file, payload, 'btnSubmitAdm', 'บันทึกและอนุมัติรายการ', function () {
+      document.getElementById('admAmount').value = '';
+      document.getElementById('admDesc').value = '';
+      document.getElementById('admFile').value = '';
+      loadSummary();
     });
   }
 
-  function processAndSend(file, payload, btnId, origText, onSuccess) {
+  function processAndSend(file, payload, buttonId, originalText, onSuccess) {
     if (file) {
-      const r = new FileReader();
-      r.onload = e => { payload.fileData = e.target.result; sendTxAPI(payload, btnId, origText, onSuccess); };
-      r.readAsDataURL(file);
-    } else { sendTxAPI(payload, btnId, origText, onSuccess); }
+      const reader = new FileReader();
+      setSystemStatus('กำลังอ่านไฟล์เอกสารประกอบ...', 'loading');
+      reader.onload = function (event) {
+        payload.fileData = event.target.result;
+        sendTxAPI(payload, buttonId, originalText, onSuccess);
+      };
+      reader.onerror = function () {
+        setSystemStatus('ไม่สามารถอ่านไฟล์ที่เลือกได้', 'error');
+        showAlert('ไม่สามารถอ่านไฟล์ได้', 'กรุณาเลือกไฟล์ใหม่และลองอีกครั้ง', false);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      sendTxAPI(payload, buttonId, originalText, onSuccess);
+    }
   }
 
-  async function sendTxAPI(payload, btnId, origText, onSuccess) {
-    const btn = document.getElementById(btnId);
-    btn.disabled = true; btn.innerText = 'กำลังประมวลผล...';
+  async function sendTxAPI(payload, buttonId, originalText, onSuccess) {
+    const button = document.getElementById(buttonId);
+    button.disabled = true;
+    button.textContent = 'กำลังส่งข้อมูล...';
     try {
-      const response = await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'submitTransaction', payload: payload }) });
-      const res = await response.json();
-      showAlert(res.success ? 'สำเร็จ' : 'ข้อผิดพลาด', res.message, res.success);
-      if (res.success) onSuccess();
-    } catch (err) { showAlert('ข้อผิดพลาด', 'ส่งข้อมูลล้มเหลว', false); } 
-    finally { btn.disabled = false; btn.innerText = origText; }
+      const result = await apiRequest(API_URL, postOptions({ action: 'submitTransaction', payload: payload }), {
+        loading: 'กำลังบันทึกรายการและส่งข้อมูลไปยังฐานข้อมูล...',
+        success: 'บันทึกรายการเรียบร้อยแล้ว',
+        failure: 'ไม่สามารถบันทึกรายการได้ กรุณาตรวจสอบการเชื่อมต่อ'
+      });
+      showAlert(result.success ? 'ดำเนินการสำเร็จ' : 'ไม่สามารถดำเนินการได้', result.message || '', Boolean(result.success));
+      if (result.success && typeof onSuccess === 'function') onSuccess();
+    } catch (error) {
+      showAlert('การเชื่อมต่อขัดข้อง', 'ไม่สามารถส่งข้อมูลได้ กรุณาตรวจสอบเครือข่ายและลองอีกครั้ง', false);
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
   }
 
-  // --- ส่วนขอรายงาน (Statement) ---
+  // --- ขอรับรายงาน Statement PDF ---
   async function submitReportReq() {
-    const email = document.getElementById('reqEmail').value;
-    if(!email.includes('@')) return showAlert('ข้อมูลไม่ครบ', 'กรุณากรอกอีเมลให้ถูกต้อง', false);
-    const btn = document.getElementById('btnSubmitReq');
-    btn.disabled = true; btn.innerText = 'กำลังส่งคำขอ...';
+    const email = document.getElementById('reqEmail').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showAlert('รูปแบบอีเมลไม่ถูกต้อง', 'กรุณาระบุอีเมลของมหาวิทยาลัยให้ถูกต้อง', false);
+      return;
+    }
+
+    const button = document.getElementById('btnSubmitReq');
+    button.disabled = true;
+    button.textContent = 'กำลังตรวจสอบและส่งคำขอ...';
     try {
-      const response = await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'requestReport', email: email }) });
-      const res = await response.json();
-      showAlert(res.success ? 'สำเร็จ' : 'ข้อผิดพลาด', res.message, res.success);
-      if(res.success) document.getElementById('reqEmail').value = '';
-    } catch(err) { showAlert('ข้อผิดพลาด', 'เชื่อมต่อล้มเหลว', false); }
-    finally { btn.disabled = false; btn.innerText = 'ส่งคำขอไปยัง Admin'; }
+      const result = await apiRequest(API_URL, postOptions({ action: 'requestReport', email: email }), {
+        loading: 'กำลังตรวจสอบอีเมลกับฐานข้อมูลและส่งคำขอ...',
+        success: 'ส่งคำขอรับรายงานเรียบร้อยแล้ว',
+        failure: 'ไม่สามารถตรวจสอบอีเมลหรือส่งคำขอได้'
+      });
+      showAlert(result.success ? 'ส่งคำขอสำเร็จ' : 'ไม่สามารถส่งคำขอได้', result.message || '', Boolean(result.success));
+      if (result.success) document.getElementById('reqEmail').value = '';
+    } catch (error) {
+      showAlert('การเชื่อมต่อขัดข้อง', 'ไม่สามารถส่งคำขอได้ กรุณาตรวจสอบเครือข่ายและลองอีกครั้ง', false);
+    } finally {
+      button.disabled = false;
+      button.textContent = 'ส่งคำขอรับรายงาน';
+    }
   }
 
   async function loadPendingReports() {
+    if (!adminAuthenticated) {
+      const box = document.getElementById('pendingReportsBox');
+      if (box) box.innerHTML = '<div class="text-center text-muted small">กรุณายืนยัน PIN ก่อนดูข้อมูลคำขอ</div>';
+      return;
+    }
+
     const box = document.getElementById('pendingReportsBox');
-    box.innerHTML = '<div class="text-center text-muted small">กำลังตรวจสอบคำขอ...</div>';
+    box.innerHTML = '<div class="loading-line"><span class="small-spinner"></span><span>กำลังโหลดคำขอรับรายงาน...</span></div>';
     try {
-      const response = await fetch(`${API_URL}?action=getPendingReports`, { method: 'GET', redirect: 'follow' });
-      const res = await response.json();
-      if(!res.requests || res.requests.length === 0) { box.innerHTML = '<div class="text-center text-muted small">ไม่มีคำขอรออนุมัติ</div>'; return; }
-      
-      let html = '';
-      res.requests.forEach(r => {
-        html += `<div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded border">
-          <div><div class="fw-bold small text-primary">${r.email}</div><div class="small text-muted">${r.date}</div></div>
-          <button class="btn btn-sm btn-one" onclick="promptPinForReport('${r.reqId}')">ส่งอีเมล</button>
-        </div>`;
+      const result = await apiRequest(API_URL + '?action=getPendingReports', { method: 'GET', redirect: 'follow' }, {
+        loading: 'กำลังโหลดรายการคำขอรับรายงาน...',
+        success: 'โหลดรายการคำขอรับรายงานเรียบร้อยแล้ว',
+        failure: 'ไม่สามารถโหลดรายการคำขอรับรายงานได้'
       });
-      box.innerHTML = html;
-    } catch(err) { box.innerHTML = '<div class="text-danger small">โหลดล้มเหลว</div>'; }
+      if (!result.success) {
+        box.innerHTML = '<div class="text-danger small">' + escapeHtml(result.message || 'ไม่สามารถโหลดข้อมูลได้') + '</div>';
+        return;
+      }
+      if (!result.requests || result.requests.length === 0) {
+        box.innerHTML = '<div class="text-center text-muted small py-2">ไม่มีคำขอรับรายงานที่รออนุมัติ</div>';
+        return;
+      }
+
+      box.innerHTML = '';
+      result.requests.forEach(function (request) {
+        const row = document.createElement('div');
+        row.className = 'd-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded border gap-2';
+        const detail = document.createElement('div');
+        detail.innerHTML = '<div class="fw-bold small text-primary">' + escapeHtml(request.email) + '</div>' +
+          '<div class="small text-muted">' + escapeHtml(request.date) + '</div>';
+        const approveButton = document.createElement('button');
+        approveButton.type = 'button';
+        approveButton.className = 'btn btn-sm btn-one';
+        approveButton.textContent = 'อนุมัติและส่งอีเมล';
+        approveButton.addEventListener('click', function () { promptPinForReport(request.reqId); });
+        row.appendChild(detail);
+        row.appendChild(approveButton);
+        box.appendChild(row);
+      });
+    } catch (error) {
+      box.innerHTML = '<div class="text-danger small">ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบการเชื่อมต่อ</div>';
+    }
   }
 
   function promptPinForReport(reqId) {
-    pendingReqId = reqId; pendingAction = 'REPORT';
+    pendingReqId = reqId;
+    pendingTxId = null;
+    pendingAction = 'REPORT';
     document.getElementById('modalPinInput').value = '';
     pinPromptModal.show();
   }
 
-  // --- โหลดประวัติและ PIN Modal สำหรับธุรกรรม ---
+  // --- PIN Modal สำหรับอนุมัติ/ปฏิเสธธุรกรรม ---
   function promptPin(txId, action) {
-    pendingTxId = txId; pendingAction = action;
+    pendingTxId = txId;
+    pendingReqId = null;
+    pendingAction = action;
     document.getElementById('modalPinInput').value = '';
     pinPromptModal.show();
   }
 
-  document.getElementById('btnConfirmPin').onclick = async function() {
-    const pin = document.getElementById('modalPinInput').value;
-    if (!pin) { pinPromptModal.hide(); return showAlert('แจ้งเตือน', 'กรุณาระบุรหัส PIN', false); }
-    const btn = this; btn.innerText = 'รอสักครู่...'; btn.disabled = true;
+  document.getElementById('btnConfirmPin').addEventListener('click', async function () {
+    const pin = document.getElementById('modalPinInput').value.trim();
+    if (!pin) {
+      pinPromptModal.hide();
+      showAlert('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุรหัส PIN เพื่อยืนยันการดำเนินการ', false);
+      return;
+    }
 
+    const button = this;
+    button.textContent = 'กำลังตรวจสอบ...';
+    button.disabled = true;
     try {
       let bodyData;
       if (pendingAction === 'REPORT') {
@@ -347,57 +655,85 @@
         bodyData = { action: 'verifyAndApprove', adminPin: pin, txId: pendingTxId, approvalAction: pendingAction };
       }
 
-      const response = await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(bodyData) });
-      const res = await response.json();
-      
+      const result = await apiRequest(API_URL, postOptions(bodyData), {
+        loading: 'กำลังตรวจสอบ PIN และดำเนินการตามคำขอ...',
+        success: 'ดำเนินการเรียบร้อยแล้ว',
+        failure: 'ไม่สามารถดำเนินการได้ กรุณาตรวจสอบ PIN และการเชื่อมต่อ'
+      });
       pinPromptModal.hide();
-      showAlert(res.success ? 'สำเร็จ' : 'ล้มเหลว', res.message, res.success);
-      
-      if (res.success) {
-        if(pendingAction === 'REPORT') loadPendingReports();
+      showAlert(result.success ? 'ดำเนินการสำเร็จ' : 'ไม่สามารถดำเนินการได้', result.message || '', Boolean(result.success));
+      if (result.success) {
+        if (pendingAction === 'REPORT') loadPendingReports();
         else loadSummary();
       }
-    } catch (err) { pinPromptModal.hide(); showAlert('ข้อผิดพลาด', 'ทำรายการไม่สำเร็จ', false); } 
-    finally { btn.innerText = 'ยืนยัน'; btn.disabled = false; }
-  };
+    } catch (error) {
+      pinPromptModal.hide();
+      showAlert('การเชื่อมต่อขัดข้อง', 'ไม่สามารถดำเนินการได้ กรุณาตรวจสอบเครือข่ายและลองอีกครั้ง', false);
+    } finally {
+      button.textContent = 'ยืนยัน';
+      button.disabled = false;
+    }
+  });
 
   async function loadSummary() {
+    const statementList = document.getElementById('statementList');
+    statementList.innerHTML = '<div class="loading-line"><span class="small-spinner"></span><span>กำลังโหลดข้อมูลบัญชีและประวัติการทำรายการ...</span></div>';
+    setSystemStatus('กำลังโหลดข้อมูลบัญชีและประวัติการทำรายการ...', 'loading');
     try {
-      const response = await fetch(`${API_URL}?action=getSummary`, { method: 'GET', redirect: 'follow' });
-      const data = await response.json();
-      if (!data.success) throw new Error(data.message);
-
-      document.getElementById('netBalanceDisplay').innerText = data.netBalance.toLocaleString('th-TH', {minimumFractionDigits: 2});
-      document.getElementById('bfDisplay').innerText = data.broughtForward.toLocaleString('th-TH', {minimumFractionDigits: 2});
-      document.getElementById('incDisplay').innerText = data.totalIncome.toLocaleString('th-TH', {minimumFractionDigits: 2});
-      document.getElementById('expDisplay').innerText = data.totalExpense.toLocaleString('th-TH', {minimumFractionDigits: 2});
-
-      const listDiv = document.getElementById('statementList');
-      if (data.statement.length === 0) { listDiv.innerHTML = '<div class="text-center py-4 balance-sub-label">ยังไม่มีรายการ</div>'; return; }
-
-      listDiv.innerHTML = '';
-      data.statement.forEach(row => {
-        let badgeClass = row.status === 'APPROVED' ? 'badge-soft-success' : (row.status === 'REJECTED' ? 'badge-soft-danger' : 'badge-soft-warning');
-        let typeColor = row.type === 'รายรับ' ? 'bg-income' : 'bg-expense';
-        let actionBtn = row.status === 'PENDING' 
-          ? `<div class="mt-2"><button class="btn btn-sm btn-outline-success rounded-pill px-3 me-2" onclick="promptPin('${row.txId}', 'APPROVE')">อนุมัติ</button><button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="promptPin('${row.txId}', 'REJECT')">ปฏิเสธ</button></div>` : '';
-        let link = row.slipUrl !== '-' ? `<a href="${row.slipUrl}" target="_blank" class="text-decoration-none small ms-2">ดูสลิป</a>` : '';
-
-        listDiv.innerHTML += `<div class="statement-item">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <div class="fw-bold"><span class="status-dot ${typeColor}"></span>${row.name}</div>
-              <div class="small balance-sub-label">${row.date} | ${row.desc} ${link}</div>
-              ${actionBtn}
-            </div>
-            <div class="text-end">
-              <div class="fw-bold mb-1">${row.amount.toLocaleString('th-TH', {minimumFractionDigits: 2})} ฿</div>
-              <span class="${badgeClass} small">${row.status}</span>
-            </div>
-          </div>
-        </div>`;
+      const data = await apiRequest(API_URL + '?action=getSummary', { method: 'GET', redirect: 'follow' }, {
+        loading: 'กำลังโหลดข้อมูลบัญชีและประวัติการทำรายการ...',
+        success: 'โหลดข้อมูลบัญชีและประวัติการทำรายการเรียบร้อยแล้ว',
+        failure: 'ไม่สามารถโหลดข้อมูลบัญชีได้ กรุณาตรวจสอบการเชื่อมต่อ'
       });
-    } catch (err) { document.getElementById('statementList').innerHTML = '<div class="text-danger text-center">โหลดข้อมูลไม่สำเร็จ</div>'; }
+      if (!data.success) throw new Error(data.message || 'ไม่สามารถโหลดข้อมูลบัญชีได้');
+
+      document.getElementById('netBalanceDisplay').textContent = formatMoney(data.netBalance);
+      document.getElementById('bfDisplay').textContent = formatMoney(data.broughtForward);
+      document.getElementById('incDisplay').textContent = formatMoney(data.totalIncome);
+      document.getElementById('expDisplay').textContent = formatMoney(data.totalExpense);
+
+      if (!Array.isArray(data.statement) || data.statement.length === 0) {
+        statementList.innerHTML = '<div class="text-center py-4 balance-sub-label">ยังไม่มีรายการในระบบ</div>';
+        return;
+      }
+
+      statementList.innerHTML = '';
+      data.statement.forEach(function (row) {
+        const badgeClass = row.status === 'APPROVED' ? 'badge-soft-success' :
+          (row.status === 'REJECTED' ? 'badge-soft-danger' : 'badge-soft-warning');
+        const typeColor = row.type === 'รายรับ' ? 'bg-income' : 'bg-expense';
+        const actionButtons = row.status === 'PENDING'
+          ? '<div class="mt-2"><button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 me-2" data-action="approve">อนุมัติ</button><button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" data-action="reject">ปฏิเสธ</button></div>'
+          : '';
+        const hasSlip = row.slipUrl && row.slipUrl !== '-';
+        const link = hasSlip
+          ? ' <a href="' + escapeHtml(row.slipUrl) + '" target="_blank" rel="noopener noreferrer" class="text-decoration-none small ms-2">ดูเอกสารแนบ</a>'
+          : '';
+
+        const item = document.createElement('div');
+        item.className = 'statement-item';
+        item.innerHTML = '<div class="d-flex justify-content-between align-items-start gap-3">' +
+          '<div class="flex-grow-1 min-w-0">' +
+            '<div class="fw-bold"><span class="status-dot ' + typeColor + '"></span>' + escapeHtml(row.name) + '</div>' +
+            '<div class="small balance-sub-label">' + escapeHtml(row.date) + ' | ' + escapeHtml(row.desc) + link + '</div>' +
+            actionButtons +
+          '</div>' +
+          '<div class="text-end flex-shrink-0">' +
+            '<div class="fw-bold mb-1">' + formatMoney(row.amount) + ' บาท</div>' +
+            '<span class="' + badgeClass + ' small">' + escapeHtml(row.status) + '</span>' +
+          '</div>' +
+        '</div>';
+
+        const approveButton = item.querySelector('[data-action="approve"]');
+        const rejectButton = item.querySelector('[data-action="reject"]');
+        if (approveButton) approveButton.addEventListener('click', function () { promptPin(row.txId, 'APPROVE'); });
+        if (rejectButton) rejectButton.addEventListener('click', function () { promptPin(row.txId, 'REJECT'); });
+        statementList.appendChild(item);
+      });
+    } catch (error) {
+      statementList.innerHTML = '<div class="text-danger text-center py-3">โหลดข้อมูลไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</div>';
+      setSystemStatus('โหลดข้อมูลบัญชีไม่สำเร็จ: ' + (error.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ'), 'error');
+    }
   }
 </script>
 </body>
